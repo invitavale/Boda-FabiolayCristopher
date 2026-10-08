@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabiola & Cristopher - Invitación de Boda</title>
+    <link rel="preload" as="image" href="foto0.jpg">
+    <link rel="stylesheet" href="CCSB.css?v=21">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <style>
+        /* Carrusel: 3 imágenes simultáneamente con foto central destacada */
+        .carousel-track-container {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 100%;
+            overflow: visible;
+        }
+        .carousel-item {
+            flex: 0 0 33.333%; /* 3 imágenes por fila en PC */
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0; /* usamos gap del track para separación */
+        }
+        .carousel-item img {
+            max-width: 100%;
+            height: 100% !important;
+            object-fit: cover;
+            border-radius: 0;
+            box-shadow: 0 10px 24px rgba(217,164,4,0.35);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        /* Hacer las fotos visualmente menos anchas manteniendo 3 por fila */
+        .framed-photo {
+            width: 90% !important;
+            height: 100% !important;
+            margin: 0 auto;
+            object-fit: cover !important;
+            background: #FFC72C !important;
+            border: 10px solid #FFC72C !important;
+            border-bottom-width: 38px !important;
+        }
+
+        @media (min-width: 769px) {
+            .carousel-item.is-center .framed-photo {
+                transform: scale(1.12) rotate(-0.2deg);
+                box-shadow: 0 34px 68px rgba(217,164,4,0.45);
+            }
+        }
+        
+        /* Mobile: una imagen centrada */
+        @media (max-width: 768px) {
+            .carousel-item {
+                flex: 0 0 100% !important; /* 1 imagen por vista en móvil */
+                padding: 0 6px !important;
+                height: 480px !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+            .carousel-item img {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: 480px !important;
+                object-fit: cover !important;
+                transform: none !important;
+            }
+            .framed-photo {
+                width: 100% !important;
+                border-width: 6px !important;
+                border-bottom-width: 20px !important;
+            }
+            
+            .carousel-track-container {
+                height: auto !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .carousel-item img {
+                max-height: 420px !important;
+                height: 420px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                object-fit: cover !important;
+                border-radius: 0;
+                transform: none !important;
+            }
+            .framed-photo {
+                width: 100% !important;
+                border-width: 4px !important;
+                border-bottom-width: 14px !important;
+            }
+            
+            .carousel-item {
+                flex: 0 0 100% !important;
+                padding: 0 8px !important;
+                height: 420px !important;
+            }
+            
+            .carousel-track-container {
+                height: auto !important;
+            }
+        }
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        @keyframes ringTwinkle {
+            0%, 100% { opacity: 0; transform: scale(0.4); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes ringShine {
+            0% { opacity: 0.25; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0.25; }
+        }
+        .ring-sparkle { transform-origin: center; transform-box: fill-box; animation: ringTwinkle 2.2s ease-in-out infinite; }
+        .ring-sparkle.s1 { animation-delay: 0s; }
+        .ring-sparkle.s2 { animation-delay: 0.7s; }
+        .ring-sparkle.s3 { animation-delay: 1.4s; }
+        .ring-shine { animation: ringShine 3s ease-in-out infinite; }
+        .ring-shine-2 { animation: ringShine 3s ease-in-out infinite; animation-delay: 1.2s; }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #fff;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 2;
+            padding: 0 10px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* Ajuste temporal: mantener altura visible sin tocar el attachment */
+        @media (min-width: 1025px) {
+            .hero-section {
+                background-image: url('foto0.jpg') !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="main-center">
+        <!-- Modal de Bienvenida -->
+        <div id="welcomeModal" class="modal-overlay">
+            <div class="welcome-hero">
+                <h1 class="welcome-title welcome-title-sm">Bienvenidos a la<br/>invitación de Fabiola Bonati y<br/>Cristopher Custodio Victoriano</h1>
+                <p class="welcome-note">La música de fondo es parte de la experiencia</p>
+                <div class="welcome-actions">
+                    <button id="enterWithMusic" class="btn-gold" onclick="enterWithMusicClick()">Ingresar con música</button>
+                    <button id="enterWithoutMusic" class="btn-gold-outline" onclick="enterWithoutMusicClick()">Ingresar sin música</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reproductor de música -->
+        <div id="musicPlayer" class="music-player" style="display: none;">
+            <button id="musicToggle" class="music-button modern-icon" title="Reproducir/Pausar música">
+                <svg id="volumeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#53402D" stroke="#fff" stroke-width="1"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.08" stroke="#53402D" stroke-width="2"></path>
+                    <circle cx="6.5" cy="12" r="1" fill="#ffe27a"/>
+                </svg>
+            </button>
+            <div id="youtube-player" style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none;"></div>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <video class="hero-bg" autoplay muted loop playsinline preload="auto" poster="foto0.jpg">
+                <source src="video0.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
+            <div class="top-garland">
+                <img src="separador-girasoles.png" alt="">
+            </div>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="date date-hidden" aria-hidden="true">20.12.2026</div>
+                    <blockquote class="quote">
+                        En este día especial, queremos rodearnos de nuestras familias y amigos para celebrar el amor que nos une.
+                    </blockquote>
+                    <div class="scroll-indicator">
+                        <div class="scroll-mouse">
+                            <div class="scroll-wheel"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <!-- Countdown -->
+        <section class="countdown-section">
+            <h2 class="section-title">Falta</h2>
+            <div class="countdown-container">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="days">00</div>
+                    <div class="countdown-label">DÍAS</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="hours">00</div>
+                    <div class="countdown-label">HORAS</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="minutes">00</div>
+                    <div class="countdown-label">MINUTOS</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="seconds">00</div>
+                    <div class="countdown-label">SEGUNDOS</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ceremony & Celebration -->
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <section class="events-section">
+            <div class="events-container events-container-single">
+                <!-- Ceremony -->
+                <div class="event-card">
+                    <div class="event-icon modern-icon">
+                        <svg width="110" height="110" viewBox="0 0 240 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="150" cy="140" r="48" stroke="#53402D" stroke-width="11" fill="none"/>
+                            <path d="M 118 108 A 48 48 0 0 1 168 96" stroke="#8a6a4a" stroke-width="4" fill="none" stroke-linecap="round" class="ring-shine"/>
+                            <rect x="130" y="86" width="7" height="14" rx="1.5" fill="#53402D"/>
+                            <rect x="163" y="86" width="7" height="14" rx="1.5" fill="#53402D"/>
+                            <polygon points="150,52 172,74 150,96 128,74" fill="#ffffff" stroke="#53402D" stroke-width="2.5"/>
+                            <polygon points="150,52 138,74 150,68 162,74" fill="#f4f0ea" stroke="#53402D" stroke-width="1.2"/>
+                            <line x1="150" y1="52" x2="150" y2="96" stroke="#53402D" stroke-width="1.2"/>
+                            <line x1="128" y1="74" x2="172" y2="74" stroke="#53402D" stroke-width="1.2"/>
+                            <line x1="138" y1="74" x2="150" y2="52" stroke="#53402D" stroke-width="1"/>
+                            <line x1="162" y1="74" x2="150" y2="52" stroke="#53402D" stroke-width="1"/>
+                            <circle cx="95" cy="140" r="48" stroke="#53402D" stroke-width="13" fill="none"/>
+                            <path d="M 63 108 A 48 48 0 0 1 113 96" stroke="#8a6a4a" stroke-width="4" fill="none" stroke-linecap="round" class="ring-shine-2"/>
+                            <g class="ring-sparkle s1">
+                                <path d="M 188 46 L 190 54 L 198 56 L 190 58 L 188 66 L 186 58 L 178 56 L 186 54 Z" fill="#53402D"/>
+                            </g>
+                            <g class="ring-sparkle s2">
+                                <path d="M 110 40 L 111.5 45 L 116.5 46.5 L 111.5 48 L 110 53 L 108.5 48 L 103.5 46.5 L 108.5 45 Z" fill="#53402D"/>
+                            </g>
+                            <g class="ring-sparkle s3">
+                                <path d="M 178 24 L 179 28 L 183 29 L 179 30 L 178 34 L 177 30 L 173 29 L 177 28 Z" fill="#53402D"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3 class="event-title">Ceremonia</h3>
+                    <div class="event-details">
+                        <h4>Día</h4>
+                        <p>Domingo 20 de Diciembre - 15:00hs</p>
+                        <p class="event-punctuality">Por favor ser puntual</p>
+                    </div>
+                    <div class="event-details">
+                        <h4>Lugar</h4>
+                        <p class="event-address">Km17, Villa Linda2 Palmarejito Santo Domingo Oeste al lado Piscina el Ancla</p>
+                    </div>
+                    <button class="btn-wedding" onclick="openLocation('ceremony')">¿Cómo llegar?</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery -->
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <section class="gallery-section">
+            <div class="gallery-container">
+                <h2 class="section-title">Retratos de Nuestro Amor</h2>
+                <p class="section-subtitle">Todos somos mortales, hasta el primer beso y la segunda copa de vino</p>
+                
+                <div class="camera-icon modern-icon">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/wsaaegar.json"
+                        trigger="loop"
+                        colors="primary:#53402D,secondary:#53402D"
+                        style="width:110px;height:110px">
+                    </lord-icon>
+                </div>
+                <!-- Carrusel -->
+                <div class="carousel-container">
+                  <button class="carousel-btn carousel-prev" id="prevBtn">❮</button>
+                  <div class="carousel-track-container">
+                    <div class="carousel-track" id="carouselTrack">
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto1.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto2.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto3.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto4.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto5.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto6.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto7.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto8.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto9.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto10.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto11.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto12.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto13.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto14.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="framed-photo" src="foto15.jpg" alt="Fabiola y Cristopher">
+                      </div>
+                    </div>
+                  </div>
+                  <button class="carousel-btn carousel-next" id="nextBtn">❯</button>
+                </div>
+
+                <div class="carousel-counter">
+                  <span id="currentSlide">1</span> / <span id="totalSlides">14</span> fotos
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Party Information -->
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <section class="party-section">
+            <div class="party-container">
+                <h2 class="section-title">Fiesta</h2>
+                <p class="section-subtitle">Hagamos juntos una fiesta épica. Aquí algunos detalles a tener en cuenta.</p>
+
+                <div class="party-grid">
+                    <div class="party-card">
+                        <div class="party-icon modern-icon bowtie-icon">
+                            <svg width="110" height="110" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 24 L24 32 L4 40 Z" fill="#53402D"/>
+                                <rect x="28" y="26" width="8" height="12" rx="2" fill="#53402D"/>
+                                <path d="M60 24 L40 32 L60 40 Z" fill="#53402D"/>
+                                <circle cx="32" cy="32" r="3" fill="#53402D"/>
+                            </svg>
+                        </div>
+                        <h3>Código de Vestimenta</h3>
+                        <button class="btn-wedding" onclick="showDressCode()">Ver más</button>
+                    </div>
+
+                    <div class="party-card">
+                        <div class="party-icon modern-icon static-icon">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/wsaaegar.json"
+                                colors="primary:#53402D,secondary:#53402D"
+                                style="width:110px;height:110px">
+                            </lord-icon>
+                        </div>
+                        <h3>Comparte tus Fotos</h3>
+                        <p>Ayúdanos a capturar cada momento, sube las fotos que tomes durante la fiesta.</p>
+                        <button class="btn-wedding" onclick="sharePhotos()">Subir Fotos</button>
+                    </div>
+
+                    <div class="party-card">
+                        <div class="party-icon modern-icon">
+                            <svg width="110" height="110" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="32" cy="17" r="5" fill="#53402D"/>
+                                <rect x="26" y="27" width="12" height="27" rx="4" fill="#53402D"/>
+                            </svg>
+                        </div>
+                        <h3>Detalles</h3>
+                        <button class="btn-wedding" onclick="showDetails()">Ver más</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gifts -->
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <section class="gifts-section">
+            <div class="gifts-container">
+                <h2 class="section-title">Mesa de Regalos</h2>
+                <p class="section-subtitle">Si deseas hacernos un regalo, puedes realizar una transferencia bancaria. Pulsa "Ver más" para ver los datos.</p>
+                
+                <div class="gift-icon modern-icon">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/kezeezyg.json"
+                        trigger="loop"
+                        colors="primary:#53402D,secondary:#53402D"
+                        style="width:110px;height:110px">
+                    </lord-icon>
+                </div>
+
+                <button class="btn-wedding" onclick="showGifts()">Ver más</button>
+            </div>
+        </section>
+
+        <!-- RSVP -->
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <section class="rsvp-section">
+            <div class="rsvp-container">
+                <h2 class="section-title">Confirma tu Asistencia</h2>
+                <p class="section-subtitle">Por favor confirma tu asistencia antes del [COLOCAR FECHA LÍMITE REAL]</p>
+                
+                <div class="whatsapp-icon modern-icon">
+                    <svg width="80" height="80" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="4" width="32" height="40" rx="3" fill="#53402D"/>
+                        <path d="M28 4v9a3 3 0 0 0 3 3h9" fill="#3A2A1C"/>
+                        <rect x="14" y="20" width="20" height="2.4" rx="1.2" fill="#fff"/>
+                        <rect x="14" y="26" width="20" height="2.4" rx="1.2" fill="#fff"/>
+                        <rect x="14" y="32" width="13" height="2.4" rx="1.2" fill="#fff"/>
+                        <circle cx="34" cy="34" r="8" fill="#fff"/>
+                        <path d="M30.5 34l2.3 2.3 4.3-4.6" stroke="#53402D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </div>
+
+                <button class="btn-wedding" onclick="confirmAttendance()">Confirmar Asistencia</button>
+            </div>
+        </section>
+
+        <!-- Cierre / Despedida -->
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <section class="closing-section">
+            <div class="closing-container">
+                <div class="closing-names">
+                    <p class="closing-eyebrow">Con todo nuestro cariño</p>
+                    <h2 class="closing-title">Fabiola <span class="ampersand">&amp;</span> Cristopher</h2>
+                </div>
+                <div class="closing-divider-line"></div>
+                <div class="closing-info">
+                    <div class="closing-icon modern-icon">
+                        <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="19" r="9" fill="#53402D"/>
+                            <path d="M6 38c4-4 8-4 12 0s8 4 12 0 8-4 12 0 8 4 12 0" stroke="#53402D" stroke-width="4" stroke-linecap="round" fill="none"/>
+                            <path d="M6 48c4-4 8-4 12 0s8 4 12 0 8-4 12 0 8 4 12 0" stroke="#53402D" stroke-width="4" stroke-linecap="round" fill="none"/>
+                        </svg>
+                    </div>
+                    <p>No olvides traer tu traje de baño: nos espera una tarde junto a la piscina, con juegos y más de una sorpresa preparada especialmente para celebrar en grande.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="section-divider">
+            <img src="separador-girasoles.png" alt="">
+        </div>
+        <footer class="footer">
+            <div class="footer-content">
+                <p>Con amor,</p>
+                <h3>Fabiola Bonati y Cristopher Custodio Victoriano</h3>
+                <p class="footer-date">20 de Diciembre, 2026</p>
+            </div>
+        </footer>
+        </div>
+
+        <!-- Modal Dress Code -->
+        <div id="dresscodeModal" class="modal-overlay" onclick="closeDressCodeModal(event)">
+            <div class="dresscode-modal" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeDressCodeModal()" aria-label="Cerrar">&times;</button>
+                <h2 class="modal-title-dark">Código de Vestimenta</h2>
+                <p class="modal-text-dark">No blanco · No amarillo · No rojo</p>
+                <div class="dresscode-colors">
+                    <span class="color-dot" style="background:#ffffff;" title="No blanco"></span>
+                    <span class="color-dot" style="background:#f4d03f;" title="No amarillo"></span>
+                    <span class="color-dot" style="background:#e74c3c;" title="No rojo"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Detalles -->
+        <div id="detallesModal" class="modal-overlay" onclick="closeDetallesModal(event)">
+            <div class="dresscode-modal" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeDetallesModal()" aria-label="Cerrar">&times;</button>
+                <h2 class="modal-title-dark">Detalles</h2>
+                <p class="modal-text-dark">Esta celebración está pensada para disfrutarla en pareja: no se permiten niños.</p>
+                <p class="modal-text-dark" style="margin-top:0.75rem; font-size:0.92rem; opacity:0.85;">Agradecemos tu comprensión.</p>
+            </div>
+        </div>
+
+        <!-- Mesa de regalos (dentro de la invitación) -->
+        <div id="regalosModal" class="modal-overlay" onclick="closeRegalosModal(event)">
+            <div class="dresscode-modal" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeRegalosModal()" aria-label="Cerrar">&times;</button>
+                <h2 class="modal-title-dark">Mesa de Regalos</h2>
+                <p class="modal-text-dark">Tu presencia es nuestro mejor regalo. Si deseas tener un detalle con nosotros, puedes transferir a:</p>
+                <div id="giftAccounts"></div>
+                <p class="modal-text-dark" style="margin-top:0.75rem; font-size:0.92rem; opacity:0.85;">¡Gracias por acompañarnos!</p>
+            </div>
+        </div>
+
+        <!-- Toast notification -->
+        <div id="toast" class="toast">
+            <div id="toastContent"></div>
+        </div>
+
+        <script>
+        (function() {
+            try {
+                if ('caches' in window) {
+                    caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {});
+                }
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister())).catch(() => {});
+                }
+            } catch(e) {}
+        })();
+        </script>
+        <script src="JAVAB.js?v=21" defer></script>
+</body>
+</html>
